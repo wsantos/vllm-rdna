@@ -145,8 +145,8 @@ void ple_short_conv_decode(const at::Tensor& x, at::Tensor& conv_state,
   const int D = x.size(1);
   const int K = weight.size(1);
   TORCH_CHECK(weight.size(0) == D, "weight.size(0) must equal D");
-  TORCH_CHECK(K == state_len + dilation + 1,
-              "K must equal state_len + dilation + 1");
+  TORCH_CHECK((K - 1) * dilation == state_len,
+              "state_len must equal (K - 1) * dilation");
   TORCH_CHECK(K <= 64, "K must be <= 64");
   TORCH_CHECK(conv_state.size(2) == state_len,
               "conv_state.size(2) must equal state_len");
@@ -274,8 +274,8 @@ void ple_short_conv_prefill(const at::Tensor& x_packed,
   const int D = x_packed.size(1);
   const int max_len = x_packed.size(2);
   const int K = weight.size(1);
-  TORCH_CHECK(K == state_len + dilation + 1,
-              "K must equal state_len + dilation + 1");
+  TORCH_CHECK((K - 1) * dilation == state_len,
+              "state_len must equal (K - 1) * dilation");
   TORCH_CHECK(K <= 64, "K must be <= 64");
   TORCH_CHECK(max_len <= 128, "max_len must be <= 128 (per-CTA channel tiles)");
   TORCH_CHECK(init_state.size(2) == state_len,
